@@ -121,17 +121,29 @@ class Mangakakalot {
 
     async FetchChapter(id, chapterID) {
         try {
+            // تنظيف المعرف من أي مساحات فارغة قد تأتي من التطبيق
+            const cleanChapterID = String(chapterID).trim();
+            
+            console.log(`[MangaDex] Fetching chapter pictures for ID: ${cleanChapterID}`);
+
             // الاستعلام عن خادم المشاهدة المنزلي الخاص بـ MangaDex
-            const response = await customAxios.get(`${this.apiUrl}/at-home/server/${chapterID}`);
+            const response = await customAxios.get(`${this.apiUrl}/at-home/server/${cleanChapterID}`);
+            
+            if (!response.data || !response.data.chapter) {
+                throw new Error("Invalid response structural from MangaDex API");
+            }
+
             const baseUrl = response.data.baseUrl;
             const hash = response.data.chapter.hash;
             const files = response.data.chapter.data;
 
-            // هنا نقوم بتركيب الروابط بشكل سليم
+            // تركيب الروابط بشكل صحيح للاستخدام في تطبيق الأندرويد
             const images = files.map(file => `${baseUrl}/data/${hash}/${file}`);
 
             return { results: { chapter: { images } } };
         } catch (error) {
+            // طباعة تفصيلية للخطأ في خادم Vercel لتعرف المشكلة مباشرة
+            console.error("Error in FetchChapter internal call:", error.message);
             throw new Error(error.message);
         }
     }
