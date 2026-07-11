@@ -1,5 +1,13 @@
 const axios = require('axios');
 
+// إنشاء مَثيل مخصص من axios يمرر الـ Headers الإجبارية لتفادي حظر خوادم MangaDex
+const customAxios = axios.create({
+    headers: {
+        'User-Agent': 'YomiManga/1.0.0 (contact.yomimanga@gmail.com)', // ضع اسماً واضحاً لتطبيقك هنا
+        'Accept': 'application/json'
+    }
+});
+
 class Mangakakalot {
     constructor() {
         this.apiUrl = "https://api.mangadex.org";
@@ -7,7 +15,7 @@ class Mangakakalot {
 
     async latestRelease() {
         try {
-            const response = await axios.get(`${this.apiUrl}/manga`, {
+            const response = await customAxios.get(`${this.apiUrl}/manga`, {
                 params: {
                     limit: 20,
                     order: { updatedAt: 'desc' },
@@ -35,7 +43,7 @@ class Mangakakalot {
         try {
             const limit = 20;
             const offset = (page - 1) * limit;
-            const response = await axios.get(`${this.apiUrl}/manga`, {
+            const response = await customAxios.get(`${this.apiUrl}/manga`, {
                 params: {
                     limit: limit,
                     offset: offset,
@@ -64,7 +72,7 @@ class Mangakakalot {
         try {
             const limit = 20;
             const offset = (page - 1) * limit;
-            const response = await axios.get(`${this.apiUrl}/manga`, {
+            const response = await customAxios.get(`${this.apiUrl}/manga`, {
                 params: {
                     title: query,
                     limit: limit,
@@ -91,7 +99,7 @@ class Mangakakalot {
 
     async chapterInfo(id) {
         try {
-            const response = await axios.get(`${this.apiUrl}/manga/${id}/feed`, {
+            const response = await customAxios.get(`${this.apiUrl}/manga/${id}/feed`, {
                 params: {
                     limit: 100,
                     translatedLanguage: ['en'],
@@ -113,11 +121,13 @@ class Mangakakalot {
 
     async FetchChapter(id, chapterID) {
         try {
-            const response = await axios.get(`${this.apiUrl}/at-home/server/${chapterID}`);
+            // الاستعلام عن خادم المشاهدة المنزلي الخاص بـ MangaDex
+            const response = await customAxios.get(`${this.apiUrl}/at-home/server/${chapterID}`);
             const baseUrl = response.data.baseUrl;
             const hash = response.data.chapter.hash;
             const files = response.data.chapter.data;
 
+            // هنا نقوم بتركيب الروابط بشكل سليم
             const images = files.map(file => `${baseUrl}/data/${hash}/${file}`);
 
             return { results: { chapter: { images } } };
