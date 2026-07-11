@@ -9,7 +9,12 @@ class Mangakakalot {
     }
 
     async latestRelease() {
-        const response = await axios.get(this.url);
+        const response = await axios.get(this.url, {
+    headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+});
+
         if (response.status === 200) {
             const html = response.data;
             const $ = cheerio.load(html);
@@ -45,8 +50,12 @@ class Mangakakalot {
 
     async latestManga(page) {
         page = parseInt(page) || 1;
-        if (page < 1) page = 1;
-        const response = await axios.get(`${this.url}/manga-list/latest-manga?page=${page}`);
+        if (page < 1) page = 1;const response = await axios.get(`${this.url}/manga-list/latest-manga?page=${page}`, {
+    headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+});
+
         if (response.status === 200) {
             const html = response.data;
             const $ = cheerio.load(html);
@@ -84,8 +93,12 @@ class Mangakakalot {
     async search(query, page) {
         if (!query) throw Error("Missing query!");
         page = parseInt(page) || 1;
-        if (page < 1) page = 1;
-        const response = await axios.get(`${this.url}/search/story/${query}?page=${page}`);
+        if (page < 1) page = 1;const response = await axios.get(`${this.url}/search/story/${query}?page=${page}`, {
+    headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+});
+
         if (response.status === 200) {
             const html = response.data;
             const $ = cheerio.load(html);
@@ -120,7 +133,12 @@ class Mangakakalot {
 
     async chapterInfo(id) {
         if (!id) throw Error("Missing id!");
-        const response = await axios.get(`${this.url}/manga/${id}`);
+       const response = await axios.get(`${this.url}/manga/${id}`, {
+    headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+});
+
         if (response.status === 200) {
             const html = response.data;
             const $ = cheerio.load(html);
